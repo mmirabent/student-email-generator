@@ -2,6 +2,10 @@ require 'CSV'
 require 'tempfile'
 require 'roo'
 
+# If the current school year is 2013-2014, then the seniors graduate in 2014
+seniorGradYear = 2014
+emailDomain = "@pacespartans.com"
+
 tempFile  = Tempfile.new('export')
 outFile   = "out.csv"
 
@@ -24,9 +28,16 @@ dataExcel.to_csv(tempFile)
 CSV.open(outFile, "wb",options) do |outCSV|
   outCSV << ["email address", "first name", "last name", "password"]
   CSV.foreach(tempFile,options) do |row|
-    firstName = row.field(:first_name)
-    lastName = row.field(:last_name)
-    outCSV << [firstName, lastName]
+    firstName   = row.field(:first_name)
+    lastName    = row.field(:last_name)
+    password    = row.field(:birth_date)
+    apid        = row.field(:apid).to_i
+    grad_year   = (seniorGradYear % 1000 + 12 - apid / 1000).to_s
+    student_no  = "%03d" % (apid % 1000)
+    
+    email = firstName[0] + lastName + grad_year + student_no + emailDomain
+    
+    outCSV << [email, firstName, lastName, password]
   end
 end
 
