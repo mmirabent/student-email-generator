@@ -12,6 +12,12 @@ outFile   = File.dirname(dataFile) + "/" + "Bulk Upload.csv"
 seniorGradYear = 2014
 emailDomain = "@pacespartans.com"
 
+
+# Check if input file exists
+if !File.exists?(dataFile)
+  abort "File %s not found" % dataFile
+end
+
 # Options for CSV::new
 options = {
   :headers            => true,
