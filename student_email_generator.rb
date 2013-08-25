@@ -2,6 +2,10 @@ require "rubygems"
 require "spreadsheet"
 require "CSV"
 
+if ARGV.length < 1
+  abort("Must specify an input file")
+end
+
 # get the absolute path for the first argument which should be a file name
 dataFile = File.expand_path(ARGV.first)
 outFile   = File.dirname(dataFile) + "/" + "Bulk Upload.csv"
