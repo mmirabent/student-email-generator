@@ -18,6 +18,11 @@ if !File.exists?(dataFile)
   abort "File %s not found" % dataFile
 end
 
+# Check that the output file is writable
+if !File.writable?(dataFile)
+  abort "could not write to output file %s" % outFile
+end
+
 # Options for CSV::new
 options = {
   :headers            => true,
