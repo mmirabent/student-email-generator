@@ -53,6 +53,12 @@ headerRow.each_index do |cell_index|
   headerHash[symbolize headerRow[cell_index]] = cell_index
 end
 
+# The headerHash should contain all of these keys
+headerArray = [:first_name, :last_name, :birth_date, :apid]
+if !headerArray.all? { |key| headerHash.member?(key) }
+  abort "The file %s is malformed, it should have a header with the values %s" % [dataFile, headerArray.to_s]
+end  
+
 # Open the CSV file for writing
 CSV.open(outFile, "wb",options) do |outCSV|
   # write out the header file
