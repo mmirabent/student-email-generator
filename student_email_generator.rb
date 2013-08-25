@@ -21,10 +21,8 @@ dataExcel = Roo::Excel.new(dataFile)
 dataExcel.to_csv(tempFile)
 
 # Instantiate the csv object for dealing with the csv file and add a header
-outCSV = CSV.open(outFile, "wb", options)
-outCSV << ["emailAddress", "first name", "last name", "password"]
-
-CSV.open(outFile, "wb") do |outCSV|
+CSV.open(outFile, "wb",options) do |outCSV|
+  outCSV << ["email address", "first name", "last name", "password"]
   CSV.foreach(tempFile,options) do |row|
     firstName = row.field(:first_name)
     lastName = row.field(:last_name)
