@@ -2,26 +2,41 @@ require "rubygems"
 require "spreadsheet"
 require "CSV"
 
+def exit_with_msg(msg)
+  $stderr.puts msg + "\nPress enter to continue...\n"
+  $stdin.getc
+  exit false
+end
+
 if ARGV.length < 1
-  abort("Must specify an input file")
+  exit_with_msg("Must specify an input file")
+end
+
+puts "Please enter the current school year (Ex: 2013-2014)"
+input = $stdin.gets.chomp
+if input =~ /^\d{4}-\d{4}$/
+  seniorGradYear = input.slice(-4..-1).to_i
+else
+  exit_with_msg("Incorrect format")
 end
 
 # get the absolute path for the first argument which should be a file name
 dataFile = File.expand_path(ARGV.first)
 outFile   = File.dirname(dataFile) + "/" + "Bulk Upload.csv"
-seniorGradYear = 2014
 emailDomain = "@pacespartans.com"
 
 
 # Check if input file exists
 if !File.exists?(dataFile)
-  abort "File %s not found" % dataFile
+  exit_with_msg "File %s not found" % dataFile
 end
+
 
 # Check that the output file is writable
 if !File.writable?(dataFile)
-  abort "could not write to output file %s" % outFile
+  exit_with_msg "could not write to output file %s" % outFile
 end
+
 
 # Options for CSV::new
 options = {
@@ -56,8 +71,8 @@ end
 # The headerHash should contain all of these keys
 headerArray = [:first_name, :last_name, :birth_date, :apid]
 if !headerArray.all? { |key| headerHash.member?(key) }
-  abort "The file %s is malformed, it should have a header with the values %s" % [dataFile, headerArray.to_s]
-end  
+  exit_with_msg "The file %s is malformed, it should have a header with the values %s" % [dataFile, headerArray.to_s]
+end
 
 # Open the CSV file for writing
 CSV.open(outFile, "wb",options) do |outCSV|
