@@ -2,6 +2,8 @@ require "rubygems"
 require "spreadsheet"
 require "CSV"
 
+# Display a message and wait for input. This is important so the error message
+# can be read before the window closes
 def exit_with_msg(msg)
   $stderr.puts msg + "\nPress enter to continue...\n"
   $stdin.getc
@@ -12,12 +14,13 @@ if ARGV.length < 1
   exit_with_msg("Must specify an input file")
 end
 
+# Get the current school year from the user, abort if its in the wrong format
 puts "Please enter the current school year (Ex: 2013-2014)"
 input = $stdin.gets.chomp
 if input =~ /^\d{4}-\d{4}$/
   seniorGradYear = input.slice(-4..-1).to_i
 else
-  exit_with_msg("Incorrect format")
+  exit_with_msg("Incorrect school year format")
 end
 
 # get the absolute path for the first argument which should be a file name
@@ -71,7 +74,7 @@ end
 # The headerHash should contain all of these keys
 headerArray = [:first_name, :last_name, :birth_date, :apid]
 if !headerArray.all? { |key| headerHash.member?(key) }
-  exit_with_msg "The file %s is malformed, it should have a header with the values %s" % [dataFile, headerArray.to_s]
+  exit_with_msg "The input file %s is malformed, it should have a header with the values %s" % [dataFile, headerArray.to_s]
 end
 
 # Open the CSV file for writing
