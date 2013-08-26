@@ -77,6 +77,9 @@ if !headerArray.all? { |key| headerHash.member?(key) }
   exit_with_msg "The input file %s is malformed, it should have a header with the values %s" % [dataFile, headerArray.to_s]
 end
 
+# setup the failedBirthdate array
+failedBirthdate = []
+
 # Open the CSV file for writing
 CSV.open(outFile, "wb",options) do |outCSV|
   # write out the header file
@@ -96,12 +99,27 @@ CSV.open(outFile, "wb",options) do |outCSV|
     lastName    = row[headerHash[:last_name]]
     birth_date  = row[headerHash[:birth_date]]
     apid        = row[headerHash[:apid]].to_i
-    password    = birth_date.strftime("%m-%d-%Y")
+
+    if birth_date.respond_to?(:strftime)
+      password    = birth_date.strftime("%m-%d-%Y")
+    else
+      password    = ""
+      failedBirthdate.push apid
+    end
+
     grad_year   = (seniorGradYear % 1000 + 12 - apid / 1000).to_s
     student_no  = "%03d" % (apid % 1000)
 
     email = firstName[0] + sanitize(lastName) + grad_year + student_no + emailDomain
 
     outCSV << [email, firstName, lastName, password]
+  end
+end
+
+# Print error if any students had bad birth dates
+if !failedBirthdate.empty?
+  puts "Students with the following APIDs had invalid birth dates"
+  failedBirthdate.each do |apid|
+    puts apid
   end
 end
